@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>NextTheFox - Creative Developer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'IBM Plex Mono', monospace;
+            background: #000;
+            color: #fff;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* CRT Effect */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.15),
+                rgba(0, 0, 0, 0.15) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        /* Noise Canvas */
+        #noise-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.03;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* Wave Transition */
+        #wave-transition {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 10000;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        #wave-transition.active {
+            opacity: 1;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Header */
+        header {
+            padding: 30px 0;
+            text-align: center;
+            border-bottom: 1px solid #fff;
+            margin-bottom: 50px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 600;
+            letter-spacing: 8px;
+            margin-bottom: 20px;
+            animation: glitch 3s infinite;
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            padding: 5px 15px;
+            border: 1px solid #fff;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        nav a:hover {
+            background: #fff;
+            color: #000;
+            box-shadow: 0 0 10px #fff;
+        }
+
+        /* Sections */
+        section {
+            min-height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 50px 0;
+        }
+
+        .section-content {
+            text-align: center;
+            animation: fadeIn 1s ease-in;
+        }
+
+        /* Hero Section */
+        #hero {
+            flex-direction: column;
+        }
+
+        .ascii-logo {
+            font-size: 12px;
+            line-height: 1.2;
+            white-space: pre;
+            margin-bottom: 30px;
+            text-shadow: 0 0 10px #fff;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            margin-bottom: 40px;
+            letter-spacing: 2px;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 15px 40px;
+            border: 2px solid #fff;
+            color: #fff;
+            text-decoration: none;
+            font-size: 18px;
+            letter-spacing: 4px;
+            transition: all 0.3s;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .cta-button::before {
+            content: '[ ';
+        }
+
+        .cta-button::after {
+            content: ' ]';
+        }
+
+        .cta-button:hover {
+            background: #fff;
+            color: #000;
+            box-shadow: 0 0 20px #fff;
+        }
+
+        /* About Section */
+        .profile-box {
+            border: 2px solid #fff;
+            padding: 40px;
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: left;
+        }
+
+        .profile-box h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 24px;
+            letter-spacing: 4px;
+        }
+
+        .profile-box p {
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .info-line {
+            display: flex;
+            margin-bottom: 10px;
+        }
+
+        .info-line strong {
+            min-width: 200px;
+        }
+
+        /* Projects Section */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .project-card {
+            border: 2px solid #fff;
+            padding: 30px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .project-card:hover {
+            box-shadow: 0 0 20px #fff;
+            transform: translateY(-5px);
+        }
+
+        .project-card h3 {
+            font-size: 20px;
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+        }
+
+        .project-card p {
+            line-height: 1.6;
+            opacity: 0.8;
+        }
+
+        /* Contact Section */
+        .contact-box {
+            border: 2px solid #fff;
+            padding: 40px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .contact-box h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            letter-spacing: 4px;
+        }
+
+        .social-links {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .social-link {
+            color: #fff;
+            text-decoration: none;
+            padding: 15px;
+            border: 1px solid #fff;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .social-link:hover {
+            background: #fff;
+            color: #000;
+        }
+
+        .social-link:hover .nsfw {
+            color: #ff0000;
+        }
+
+        .nsfw {
+            color: #ff0000;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .social-link.highlight {
+            animation: highlight 2s ease-in-out;
+            box-shadow: 0 0 20px #ff0000;
+        }
+
+        @keyframes highlight {
+            0%, 100% {
+                box-shadow: 0 0 0 #ff0000;
+                transform: scale(1);
+            }
+            50% {
+                box-shadow: 0 0 30px #ff0000;
+                transform: scale(1.05);
+            }
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 30px;
+            border-top: 1px solid #fff;
+            margin-top: 50px;
+        }
+
+        .ascii-line {
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+        }
+
+        /* Animations */
+        @keyframes glitch {
+            0%, 100% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                font-size: 14px;
+            }
+
+            .container {
+                padding: 10px;
+            }
+
+            header {
+                padding: 20px 0;
+                margin-bottom: 30px;
+            }
+
+            .logo {
+                font-size: 14px;
+                letter-spacing: 2px;
+            }
+
+            nav {
+                gap: 10px;
+            }
+
+            nav a {
+                font-size: 10px;
+                padding: 5px 10px;
+            }
+
+            section {
+                min-height: auto;
+                padding: 30px 0;
+            }
+
+            .ascii-logo {
+                font-size: 5px;
+                margin-bottom: 20px;
+            }
+
+            .subtitle {
+                font-size: 12px;
+                letter-spacing: 1px;
+                margin-bottom: 30px;
+            }
+
+            .cta-button {
+                padding: 10px 25px;
+                font-size: 14px;
+                letter-spacing: 2px;
+            }
+
+            .profile-box, .contact-box {
+                padding: 15px;
+            }
+
+            .profile-box h2, .contact-box h2 {
+                font-size: 16px;
+                letter-spacing: 2px;
+                margin-bottom: 20px;
+            }
+
+            .info-line {
+                flex-direction: column;
+                font-size: 12px;
+                margin-bottom: 8px;
+            }
+
+            .info-line strong {
+                min-width: auto;
+                margin-bottom: 3px;
+            }
+
+            .projects-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .project-card {
+                padding: 20px;
+            }
+
+            .project-card h3 {
+                font-size: 16px;
+                letter-spacing: 1px;
+            }
+
+            .project-card p {
+                font-size: 12px;
+            }
+
+            .social-links {
+                gap: 10px;
+            }
+
+            .social-link {
+                padding: 12px;
+                font-size: 12px;
+            }
+
+            footer {
+                padding: 20px;
+                font-size: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo {
+                font-size: 12px;
+                letter-spacing: 1px;
+            }
+
+            .ascii-logo {
+                font-size: 4px;
+            }
+
+            .subtitle {
+                font-size: 10px;
+            }
+
+            nav a {
+                font-size: 9px;
+                padding: 4px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="noise-canvas"></canvas>
+    <div id="wave-transition"></div>
+
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div class="logo">NEXT THE-FOX</div>
+            <nav>
+                <a href="#hero">[ HOME ]</a>
+                <a href="#about">[ ABOUT ]</a>
+                <a href="#projects">[ PROJECT ]</a>
+                <a href="#contact">[ CONTACT ]</a>
+            </nav>
+        </header>
+
+        <!-- Hero Section -->
+        <section id="hero">
+            <div class="section-content">
+                <pre class="ascii-logo">
+███╗   ██╗███████╗██╗  ██╗████████╗    ████████╗██╗  ██╗███████╗      ███████╗ ██████╗ ██╗  ██╗
+████╗  ██║██╔════╝╚██╗██╔╝╚══██╔══╝    ╚══██╔══╝██║  ██║██╔════╝      ██╔════╝██╔═══██╗╚██╗██╔╝
+██╔██╗ ██║█████╗   ╚███╔╝    ██║          ██║   ███████║█████╗  █████╗█████╗  ██║   ██║ ╚███╔╝ 
+██║╚██╗██║██╔══╝   ██╔██╗    ██║          ██║   ██╔══██║██╔══╝  ╚════╝██╔══╝  ██║   ██║ ██╔██╗ 
+██║ ╚████║███████╗██╔╝ ██╗   ██║          ██║   ██║  ██║███████╗      ██║     ╚██████╔╝██╔╝ ██╗
+╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝   ╚═╝          ╚═╝   ╚═╝  ╚═╝╚══════╝      ╚═╝      ╚═════╝ ╚═╝  ╚═╝
+                </pre>
+                <div class="subtitle">Creative Developer | Musician | Fox</div>
+                <a href="#projects" class="cta-button">PROJECT</a>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about">
+            <div class="profile-box">
+                <h2>╔═══ ABOUT ME ═══╗</h2>
+                <div class="info-line">
+                    <strong>Name:</strong>
+                    <span>NextTheFox</span>
+                </div>
+                <div class="info-line">
+                    <strong>Species:</strong>
+                    <span>Femboy furry | gay | he/him</span>
+                </div>
+                <div class="info-line">
+                    <strong>Profession:</strong>
+                    <span>NSFW artist | music coder</span>
+                </div>
+                <div class="info-line">
+                    <strong>Project:</strong>
+                    <span>@TuneScape Network</span>
+                </div>
+                <div class="info-line">
+                    <strong>Age:</strong>
+                    <span>24</span>
+                </div>
+                <div class="info-line">
+                    <strong>Languages:</strong>
+                    <span>EN & RU</span>
+                </div>
+                <div class="info-line">
+                    <strong>Location:</strong>
+                    <span>made in Russia</span>
+                </div>
+                <div class="info-line">
+                    <strong>Partner:</strong>
+                    <span>MIX (@MIX72777) ❤️ | Mifix (cat-fox)</span>
+                </div>
+                <div class="info-line">
+                    <strong>Programming:</strong>
+                    <span>Python</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section id="projects">
+            <div class="section-content">
+                <h2 style="margin-bottom: 50px; font-size: 28px; letter-spacing: 6px;">╔═══ PROJECTS ═══╗</h2>
+                <div class="projects-grid">
+                    <div class="project-card" id="tunescape-card">
+                        <h3>TUNESCAPE NETWORK</h3>
+                        <p>Music & Emotion platform. Creating atmospheric soundscapes and emotional compositions.</p>
+                    </div>
+                    <div class="project-card" id="nsfw-card">
+                        <h3>NSFW ART</h3>
+                        <p>Digital art portfolio featuring character design and creative visual storytelling.</p>
+                    </div>
+                    <div class="project-card" id="code-card">
+                        <h3>CODE PROJECTS</h3>
+                        <p>Python-based applications, automation tools, and creative coding experiments.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact">
+            <div class="contact-box">
+                <h2>╔═══ CONTACT ═══╗</h2>
+                <div class="social-links">
+                    <a href="https://github.com/NextTheFox" target="_blank" class="social-link">GITHUB</a>
+                    <a href="https://t.me/NextTheFox_OwO" target="_blank" class="social-link">TELEGRAM (MAIN)</a>
+                    <a href="https://t.me/NextTheFox_DM" target="_blank" class="social-link">TELEGRAM (DM) <span class="nsfw">18+</span></a>
+                    <a href="https://bsky.app/profile/nextthefox.bsky.social" target="_blank" class="social-link">BLUESKY <span class="nsfw">18+</span></a>
+                    <a href="https://x.com/NextTheFox?t=NPKfyfIlOa86Dw0u9_nMFg&s=09" target="_blank" class="social-link">X / TWITTER <span class="nsfw">18+</span></a>
+                    <a href="https://youtube.com/@nextthefox?si=dbbPnWSACDipfZky" target="_blank" class="social-link">YOUTUBE</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer>
+            <div class="ascii-line">═══════════════════════════════════════</div>
+            <p>© 2025 NEXT THE-FOX | POWERED BY CODE</p>
+        </footer>
+    </div>
+
+    <script>
+        // Noise Canvas Effect
+        const canvas = document.getElementById('noise-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        const chars = '#%$@.*+=-_:;,';
+        
+        function drawNoise() {
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#fff';
+            ctx.font = '10px monospace';
+            
+            for (let i = 0; i < 200; i++) {
+                const x = Math.random() * canvas.width;
+                const y = Math.random() * canvas.height;
+                const char = chars[Math.floor(Math.random() * chars.length)];
+                ctx.fillText(char, x, y);
+            }
+            
+            requestAnimationFrame(drawNoise);
+        }
+        
+        drawNoise();
+
+        // Wave Transition Effect
+        const waveTransition = document.getElementById('wave-transition');
+        const links = document.querySelectorAll('a[href^="#"]');
+        
+        links.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const target = document.querySelector(link.getAttribute('href'));
+                
+                waveTransition.classList.add('active');
+                
+                setTimeout(() => {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                    
+                    setTimeout(() => {
+                        waveTransition.classList.remove('active');
+                    }, 300);
+                }, 300);
+            });
+        });
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const href = this.getAttribute('href');
+                if (href !== '#') {
+                    e.preventDefault();
+                    const target = document.querySelector(href);
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                }
+            });
+        });
+
+        // NSFW Card click - scroll to contact and highlight 18+ links
+        document.getElementById('nsfw-card').addEventListener('click', function() {
+            waveTransition.classList.add('active');
+            
+            setTimeout(() => {
+                document.getElementById('contact').scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+                
+                setTimeout(() => {
+                    waveTransition.classList.remove('active');
+                    
+                    // Highlight all 18+ links
+                    const nsfwLinks = document.querySelectorAll('.social-link .nsfw');
+                    nsfwLinks.forEach(link => {
+                        const parentLink = link.closest('.social-link');
+                        parentLink.classList.add('highlight');
+                        
+                        setTimeout(() => {
+                            parentLink.classList.remove('highlight');
+                        }, 2000);
+                    });
+                }, 300);
+            }, 300);
+        });
+
+        // Code Projects Card click - coming soon page
+        document.getElementById('code-card').addEventListener('click', function() {
+            waveTransition.classList.add('active');
+            
+            setTimeout(() => {
+                window.location.href = 'coming-soon.html';
+            }, 600);
+        });
+
+        // TuneScape Network Card click - coming soon page
+        document.getElementById('tunescape-card').addEventListener('click', function() {
+            waveTransition.classList.add('active');
+            
+            setTimeout(() => {
+                window.location.href = 'coming-soon.html';
+            }, 600);
+        });
+    </script>
+</body>
+</html>

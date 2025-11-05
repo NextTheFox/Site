@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coming Soon | NextTheFox</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'IBM Plex Mono', monospace;
+            background: #000;
+            color: #fff;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* CRT Effect */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.15),
+                rgba(0, 0, 0, 0.15) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        /* Noise Canvas */
+        #noise-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.05;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* Matrix Rain Effect */
+        #matrix-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.1;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        /* Container */
+        .coming-soon-container {
+            text-align: center;
+            padding: 20px;
+            position: relative;
+            z-index: 10;
+            animation: fadeIn 1.5s ease-in;
+        }
+
+        /* Logo */
+        .logo {
+            font-size: 20px;
+            letter-spacing: 6px;
+            margin-bottom: 50px;
+            opacity: 0.7;
+        }
+
+        /* Main Title */
+        .main-title {
+            font-size: 80px;
+            font-weight: 600;
+            letter-spacing: 15px;
+            margin-bottom: 20px;
+            animation: glitch 3s infinite;
+            text-shadow: 0 0 20px #fff;
+        }
+
+        /* ASCII Art */
+        .ascii-art {
+            font-size: 10px;
+            line-height: 1.2;
+            white-space: pre;
+            margin-bottom: 40px;
+            opacity: 0.8;
+            animation: pulse 2s infinite;
+        }
+
+        /* Subtitle */
+        .subtitle {
+            font-size: 24px;
+            letter-spacing: 4px;
+            margin-bottom: 15px;
+        }
+
+        .description {
+            font-size: 16px;
+            letter-spacing: 2px;
+            margin-bottom: 50px;
+            opacity: 0.7;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Loading Animation */
+        .loading-bar-container {
+            width: 500px;
+            max-width: 90%;
+            margin: 0 auto 30px;
+            border: 2px solid #fff;
+            padding: 5px;
+            position: relative;
+        }
+
+        .loading-bar {
+            height: 30px;
+            background: #fff;
+            width: 0%;
+            animation: loading 3s ease-in-out infinite;
+        }
+
+        .loading-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 14px;
+            letter-spacing: 2px;
+            color: #000;
+            mix-blend-mode: difference;
+        }
+
+        /* Status Messages */
+        .status-messages {
+            margin-bottom: 40px;
+            min-height: 30px;
+        }
+
+        .status-message {
+            font-size: 14px;
+            letter-spacing: 2px;
+            color: #0f0;
+            animation: blink 1s infinite;
+        }
+
+        /* Buttons */
+        .button-container {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 50px;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: 2px solid #fff;
+            background: transparent;
+            color: #fff;
+            text-decoration: none;
+            font-size: 16px;
+            letter-spacing: 3px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-block;
+        }
+
+        .btn::before {
+            content: '[ ';
+        }
+
+        .btn::after {
+            content: ' ]';
+        }
+
+        .btn:hover {
+            background: #fff;
+            color: #000;
+            box-shadow: 0 0 20px #fff;
+            transform: translateY(-3px);
+        }
+
+        /* Info Box */
+        .info-box {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #333;
+            text-align: left;
+            font-size: 12px;
+            opacity: 0.5;
+        }
+
+        .info-box p {
+            margin-bottom: 8px;
+        }
+
+        /* Animations */
+        @keyframes glitch {
+            0%, 90%, 100% { 
+                transform: translate(0);
+            }
+            92% { 
+                transform: translate(-3px, 3px);
+            }
+            94% { 
+                transform: translate(3px, -3px);
+            }
+            96% { 
+                transform: translate(-3px, -3px);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 0.4; }
+        }
+
+        @keyframes loading {
+            0% { width: 0%; }
+            50% { width: 75%; }
+            100% { width: 0%; }
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 40px;
+                letter-spacing: 8px;
+            }
+
+            .ascii-art {
+                font-size: 6px;
+            }
+
+            .subtitle {
+                font-size: 18px;
+            }
+
+            .description {
+                font-size: 14px;
+            }
+
+            .loading-bar-container {
+                width: 90%;
+            }
+
+            .btn {
+                padding: 12px 20px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="noise-canvas"></canvas>
+    <canvas id="matrix-canvas"></canvas>
+
+    <div class="coming-soon-container">
+        <div class="logo">NEXT THE-FOX</div>
+
+        <div class="main-title">COMING SOON</div>
+
+        <pre class="ascii-art">
+    /\_/\  
+   ( ^.^ ) 
+    > w <
+   /|   |\
+  (_|   |_)
+        </pre>
+
+        <div class="subtitle">BUILDING SOMETHING SPECIAL</div>
+        <div class="description">
+            This page is currently under construction. <br>
+            Something amazing is being coded...
+        </div>
+
+        <div class="loading-bar-container">
+            <div class="loading-bar"></div>
+            <div class="loading-text">LOADING...</div>
+        </div>
+
+        <div class="status-messages">
+            <div class="status-message" id="status">▶ Initializing systems...</div>
+        </div>
+
+        <div class="button-container">
+            <a href="index.html" class="btn">RETURN HOME</a>
+        </div>
+
+        <div class="info-box">
+            <p>╔═══ SYSTEM STATUS ═══╗</p>
+            <p>Status: IN DEVELOPMENT</p>
+            <p>Progress: <span id="progress">0</span>%</p>
+            <p>ETA: SOON™</p>
+            <p>Last Update: <span id="timestamp"></span></p>
+            <p>╚═════════════════════╝</p>
+        </div>
+    </div>
+
+    <script>
+        // Noise Canvas Effect
+        const noiseCanvas = document.getElementById('noise-canvas');
+        const noiseCtx = noiseCanvas.getContext('2d');
+        
+        function resizeCanvas() {
+            noiseCanvas.width = window.innerWidth;
+            noiseCanvas.height = window.innerHeight;
+            matrixCanvas.width = window.innerWidth;
+            matrixCanvas.height = window.innerHeight;
+        }
+        
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        const chars = '#%$@.*+=-_:;,';
+        
+        function drawNoise() {
+            noiseCtx.fillStyle = '#000';
+            noiseCtx.fillRect(0, 0, noiseCanvas.width, noiseCanvas.height);
+            noiseCtx.fillStyle = '#fff';
+            noiseCtx.font = '10px monospace';
+            
+            for (let i = 0; i < 150; i++) {
+                const x = Math.random() * noiseCanvas.width;
+                const y = Math.random() * noiseCanvas.height;
+                const char = chars[Math.floor(Math.random() * chars.length)];
+                noiseCtx.fillText(char, x, y);
+            }
+            
+            requestAnimationFrame(drawNoise);
+        }
+        
+        drawNoise();
+
+        // Matrix Rain Effect
+        const matrixCanvas = document.getElementById('matrix-canvas');
+        const matrixCtx = matrixCanvas.getContext('2d');
+        
+        const fontSize = 14;
+        const columns = matrixCanvas.width / fontSize;
+        const drops = [];
+        
+        for (let i = 0; i < columns; i++) {
+            drops[i] = 1;
+        }
+        
+        const matrixChars = '01';
+        
+        function drawMatrix() {
+            matrixCtx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            matrixCtx.fillRect(0, 0, matrixCanvas.width, matrixCanvas.height);
+            
+            matrixCtx.fillStyle = '#0f0';
+            matrixCtx.font = fontSize + 'px monospace';
+            
+            for (let i = 0; i < drops.length; i++) {
+                const text = matrixChars[Math.floor(Math.random() * matrixChars.length)];
+                matrixCtx.fillText(text, i * fontSize, drops[i] * fontSize);
+                
+                if (drops[i] * fontSize > matrixCanvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                
+                drops[i]++;
+            }
+        }
+        
+        setInterval(drawMatrix, 50);
+
+        // Update timestamp
+        document.getElementById('timestamp').textContent = new Date().toLocaleString();
+
+        // Status messages rotation
+        const statusMessages = [
+            '▶ Initializing systems...',
+            '▶ Loading modules...',
+            '▶ Compiling code...',
+            '▶ Optimizing performance...',
+            '▶ Testing features...',
+            '▶ Almost ready...'
+        ];
+        
+        let statusIndex = 0;
+        setInterval(() => {
+            statusIndex = (statusIndex + 1) % statusMessages.length;
+            document.getElementById('status').textContent = statusMessages[statusIndex];
+        }, 2000);
+
+        // Progress counter
+        let progress = 0;
+        setInterval(() => {
+            progress = (progress + 1) % 100;
+            document.getElementById('progress').textContent = progress;
+        }, 100);
+    </script>
+</body>
+</html>
